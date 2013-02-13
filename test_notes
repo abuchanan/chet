@@ -1,0 +1,83 @@
+/*
+TODO
+
+histogram (coverage) track
+
+integrate twitter's bootstrap css
+
+connect to server
+
+
+prefetching
+
+ruler
+
+URLs for linking to specific locations
+
+gene info popups/hover
+
+bug: dragging selects label text
+
+search
+
+sequence data
+
+overview area: shows current chromosome, with visible sectino highlighted
+
+drag to select
+
+track configuration
+
+onblur instead of onkeypress for ref + start + end
+
+track labels
+
+it'd be nice if tracks were interactive, e.g. when i hover over a coverage histogram,
+it displays the Y-axis value at that X.  This interactivity could conflict with
+dragging to pan though. if panning/zooming interaction was confined to an overview track?
+
+feature editor
+
+handle empty
+
+window size detection and response
+
+dragging the offset so that elements are added/removed from the screen changes the height of the viewer.
+ok, but might have effects on UX.  try to keep the viewer a reasonable height.
+could also make the features jump around as the packing is changed.
+
+if there are no features, container collapses to zero.  should be a min height
+
+groups of isoforms.  probably handled already
+
+zoom, or rather visible range: rough draft done
+
+feature packing: rough draft done, needs extensive testing
+
+multiple tracks: rough draft done
+
+multiple chromosomes: rough draft done
+
+drag to pan: rough, needs testing
+
+multiple data sources: data source is inherent to URL
+*/
+
+----
+
+when displaying a feature, the feature should not be drawn outside the bounds of the viewer.  same for end.
+
+configure a condition where this happens:
+- a feature
+- a viewer
+
+a good solution for this is CSS "overflow: hidden", which means this needs to be tested
+at the browser level, with some way to perceive that it, in fact, doesn't show the overflowing feature.  sounds like comparing images.  that's tough.
+
+this is an interesting case where the easily testable approach isn't the easiest (or best?) to implement.
+
+-----
+
+when features are no longer visible, their dom elements should be deleted.
+
+in some cases, it might make sense to keep them around, if they are just outside the visible range.

@@ -1,0 +1,39 @@
+<!doctype html>
+<html ng-app='Chet'>
+
+<head>
+  <meta charset='utf-8'>
+  <script src='jquery-1.9.1.js'></script>
+  <!--<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js"></script>-->
+  <script src="angular.min.js"></script>
+  <script src="chet.js"></script>
+  <link rel='stylesheet' href='style.css'>
+
+</head>
+
+<body ng-controller='ChetCtrl'>
+
+    <input size='3' ng-model='pos.ref'></input>
+    <input size='3' ng-model='pos.start'></input>
+    <input size='3' ng-model='pos.end'></input>
+
+    <button ng-click='addTrack()'>Add Track</button>
+
+    <!-- TODO chet-drag-position is a great start, but an overview will probably be better -->
+    <chet-drag-position position='pos'>
+      <!-- NOTE explicit closing tags are important for these custom tags -->
+      <!--
+      <chet-gene-track position='pos' server='static_config.server'></chet-gene-track>
+      <chet-gene-track position='pos' server='static_config_B.server'></chet-gene-track>
+      -->
+
+      <chet-coverage-track position='pos' server='static_config_C.server'></chet-coverage-track>
+
+      <!-- TODO "config" only, or "type" and "config"? 
+                 related to the question above
+      -->
+      <!--<chet-dynamic-track config='track' ng-repeat='track in tracks'></chet-dynamic-track>-->
+    </chet-drag-position>
+</body>
+
+</html>

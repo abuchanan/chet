@@ -1,0 +1,22 @@
+.track {
+    padding: 10px 0;
+}
+
+.track-label {
+    font-size: .8em;
+    padding: 2px 5px;
+    background-color: #eee;
+}
+
+.gene-track-level {
+    position: relative;
+    padding: 2px 0;
+    overflow: hidden;
+}
+
+.box {
+    height: 20px;
+    background-color: red;
+    display: inline-block;
+    position: absolute;
+}
