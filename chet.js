@@ -36,8 +36,7 @@ angular.module('Chet', []).
   directive('chetTrack', function($compile) {
     return {
       restrict: 'E',
-      //templateUrl: 'track.html',
-      template: "<div class='track'><div class='track-label'>Label</div><div ng-transclude></div></div>",
+      templateUrl: 'track.html',
       transclude: true,
       replace: true,
       link: function(scope, elem, attrs, controller) {
@@ -69,16 +68,52 @@ angular.module('Chet', []).
   directive('chetCoverageTrack', function() {
     return {
       restrict: 'E',
-      //templateUrl: 'coverage_track.html',
-      template: "<chet-track><canvas width='300' height='100'></canvas></chet-track>",
+      templateUrl: 'coverage_track.html',
+      controller: function($scope) {
 
-      link: function(scope, elem, attrs, ctrl) {
-          var canvas = elem.find('canvas')[0];
-          var ctx = canvas.getContext('2d');
-          ctx.fillRect(10, 10, 10, 10);
-          console.log('coverage post link');
+          $scope.points = [];
+          $scope.$watch('position', function(position) {
+              $scope.points = $scope.server.getCoverageForInterval(position);
+          }, true);
+      },
+
+      scope: {
+        position: '=',
+        server: '=',
       },
     };
+  }).
+  directive('chetCoverageCanvasControl', function() {
+    return {
+      require: '^chetCoverageTrack',
+      scope: {
+        points: '=',
+      },
+      link: function(scope, elem, attrs, ctrl) {
+
+          var canvas = elem[0];
+          var ctx = canvas.getContext('2d');
+
+          scope.$watch('points', function(pts) {
+
+              ctx.clearRect(0, 0, 300, 200);
+              var width = 300;
+              var d = 300 / pts.length;
+
+              ctx.beginPath();
+
+              ctx.moveTo(0, 100);
+              var x = 0;
+              angular.forEach(pts, function(pt) {
+                  ctx.lineTo(x, pt);
+                  x += d;
+              });
+              ctx.lineTo(width, 100);
+              ctx.lineTo(0, 100);
+              ctx.fill();
+          });
+      },
+    }
   }).
   directive('chetDragPosition', function() {
     return {
@@ -188,9 +223,9 @@ ChetPosition.prototype = {
     get width() {
       return this.end - this.start;
     },
-    shift: function(amt) {
+    shift: function(amount) {
       var w = this.width;
-      this.start += amt;
+      this.start += amount;
       this.end = this.start + w;
     }
 };
@@ -265,10 +300,22 @@ var serverB = new DummyGeneServer({
 });
 
 function DummyCoverageServer() {
-    this.getCoverageForInterval = function(position) {
+    var max = 100;
+    var min = 30;
+    var count = 1000;
+    var interval = 10;
 
-        var ret = [];
-        return ret;
+    var all_coverage = [];
+    for (var i = 0; i < count; i++) {
+        var pt = Math.floor((Math.random() * (max - min + 1)) + min);
+        all_coverage.push(pt);
+    }
+
+    this.getCoverageForInterval = function(position) {
+        // TODO these calculations are likely wrong, I put 1 second of thought into them
+        var start = Math.floor(position.start / interval);
+        var end = Math.floor(position.end / interval);
+        return all_coverage.slice(start, end);
     }
 }
 

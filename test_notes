@@ -1,12 +1,11 @@
 /*
 TODO
 
-histogram (coverage) track
-
 integrate twitter's bootstrap css
 
 connect to server
 
+loading inidicators
 
 prefetching
 
@@ -61,6 +60,8 @@ multiple chromosomes: rough draft done
 drag to pan: rough, needs testing
 
 multiple data sources: data source is inherent to URL
+
+histogram (coverage) track: rough draft done
 */
 
 ----
