@@ -73,7 +73,22 @@ angular.module('Chet', []).
 
           $scope.points = [];
           $scope.$watch('position', function(position) {
-              $scope.points = $scope.server.getCoverageForInterval(position);
+
+              var res = $scope.server.getCoverageForInterval(position);
+
+              var points = [];
+              angular.forEach(res.points, function(pt, i) {
+                  var pt_x = res.start + (i * res.interval);
+                  var x = pt_x - position.start;
+                  points.push({
+                    x: x,
+                    y: pt,
+                  });
+              });
+
+              $scope.points = points;
+
+
           }, true);
       },
 
@@ -96,18 +111,19 @@ angular.module('Chet', []).
 
           scope.$watch('points', function(pts) {
 
+              // TODO dynamic canvas dimensions
               ctx.clearRect(0, 0, 300, 200);
               var width = 300;
-              var d = 300 / pts.length;
 
               ctx.beginPath();
 
               ctx.moveTo(0, 100);
-              var x = 0;
+
               angular.forEach(pts, function(pt) {
-                  ctx.lineTo(x, pt);
-                  x += d;
+                  // TODO normalize pt to height/scale of canvas
+                  ctx.lineTo(pt.x, pt.y);
               });
+
               ctx.lineTo(width, 100);
               ctx.lineTo(0, 100);
               ctx.fill();
@@ -312,10 +328,19 @@ function DummyCoverageServer() {
     }
 
     this.getCoverageForInterval = function(position) {
+        // TODO doesn't handle position outside range of data
+        //      e.g. negative start position
+
         // TODO these calculations are likely wrong, I put 1 second of thought into them
         var start = Math.floor(position.start / interval);
+        // TODO shouldn't this be ceiling?
         var end = Math.floor(position.end / interval);
-        return all_coverage.slice(start, end);
+        return {
+          start: start * interval,
+          end: end * interval,
+          interval: interval,
+          points: all_coverage.slice(start, end),
+        }
     }
 }
 

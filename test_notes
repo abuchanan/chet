@@ -1,13 +1,23 @@
 /*
 TODO
 
+overview area: shows current chromosome, with visible section highlighted
+drag to pan
+draggable edges for zooming
+maybe scroll here triggers zoom?
+problem here is that it'd be more useful to drag-select in an overview, with
+drag-pan in the tracks viewer
+
+
+track configuration
+pluggable track type config
+
+
+draw actual features
+
+
 integrate twitter's bootstrap css
-
-connect to server
-
 loading inidicators
-
-prefetching
 
 ruler
 
@@ -17,19 +27,31 @@ gene info popups/hover
 
 bug: dragging selects label text
 
+
+
+connect to server
+prefetching
+
+
 search
 
 sequence data
 
-overview area: shows current chromosome, with visible sectino highlighted
 
 drag to select
 
-track configuration
+reference list
+
 
 onblur instead of onkeypress for ref + start + end
 
-track labels
+draggable track order
+
+track buttons
+
+track config panel/pop-up
+
+actual, configurable track labels
 
 it'd be nice if tracks were interactive, e.g. when i hover over a coverage histogram,
 it displays the Y-axis value at that X.  This interactivity could conflict with
@@ -48,6 +70,9 @@ could also make the features jump around as the packing is changed.
 if there are no features, container collapses to zero.  should be a min height
 
 groups of isoforms.  probably handled already
+
+
+
 
 zoom, or rather visible range: rough draft done
 
