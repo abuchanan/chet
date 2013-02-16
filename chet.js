@@ -39,8 +39,30 @@ angular.module('Chet', []).
       templateUrl: 'track.html',
       transclude: true,
       replace: true,
+      scope: {
+        label: '@',
+      },
       link: function(scope, elem, attrs, controller) {
-        console.log('track link');
+        scope.label = 'Foo';
+      },
+    };
+  }).
+  directive('chetOverview', function($compile) {
+    return {
+      restrict: 'E',
+      templateUrl: 'overview.html',
+      scope: {
+        position: '=',
+      },
+      link: function(scope, elem, attrs, controller) {
+        scope.$watch('position', function(position) {
+
+            var start = position.start / position.max * 100;
+            var end = position.end / position.max * 100;
+            elem.find('.overview-visible').css('left', start + '%');
+            elem.find('.overview-visible').width(end - start + '%');
+
+        }, true);
       },
     };
   }).
@@ -112,18 +134,20 @@ angular.module('Chet', []).
               ctx.clearRect(0, 0, 300, 200);
               var width = 300;
 
-              ctx.beginPath();
+              if (pts.length > 0) {
+                  ctx.beginPath();
 
-              ctx.moveTo(0, 100);
+                  ctx.moveTo(pts[0].x, 100);
 
-              angular.forEach(pts, function(pt) {
-                  // TODO normalize pt to height/scale of canvas
-                  ctx.lineTo(pt.x, pt.y);
-              });
+                  angular.forEach(pts, function(pt) {
+                      // TODO normalize pt to height/scale of canvas
+                      ctx.lineTo(pt.x, pt.y);
+                  });
 
-              ctx.lineTo(width, 100);
-              ctx.lineTo(0, 100);
-              ctx.fill();
+                  ctx.lineTo(width, 100);
+                  ctx.lineTo(0, 100);
+                  ctx.fill();
+              }
           });
       },
     }
@@ -254,6 +278,7 @@ function ChetPosition(ref, start, end) {
   this.ref = ref;
   this.start = start;
   this.end = end;
+  this.max = 8000;
 }
 // TODO I always forget, is there something missing from this style of inheritance?
 ChetPosition.prototype = {
@@ -353,7 +378,7 @@ function DummyCoverageServer() {
         //      e.g. negative start position
 
         // TODO these calculations are likely wrong, I put 1 second of thought into them
-        var start = Math.floor(position.start / interval);
+        var start = Math.max(Math.floor(position.start / interval), 0);
         // TODO shouldn't this be ceiling?
         var end = Math.floor(position.end / interval);
         return {

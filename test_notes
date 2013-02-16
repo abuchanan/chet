@@ -29,6 +29,12 @@ gene info popups/hover
 
 bug: dragging selects label text
 
+unit testing:  a terrible thing to have in a todo list
+
+
+test odd positions
+- start >= end
+- end - start == 1
 
 
 connect to server
