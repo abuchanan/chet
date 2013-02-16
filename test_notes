@@ -1,8 +1,8 @@
 /*
 TODO
 
-overview area: shows current chromosome, with visible section highlighted
-drag to pan
+
+overview: drag to pan
 draggable edges for zooming
 maybe scroll here triggers zoom?
 problem here is that it'd be more useful to drag-select in an overview, with

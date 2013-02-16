@@ -54,6 +54,38 @@ angular.module('Chet', []).
       scope: {
         position: '=',
       },
+      controller: function($scope, $element, $document) {
+
+          var dragging = false;
+          var pos = 0;
+
+          // TODO shifted position needs to be relative to the scale of the viewer
+          //      e.g. 1 px on a 1 to 1 million scale is a bigger jump than
+          //           1 px on a 1 to 1000 scale.
+          $scope.startDrag = function(e) {
+            dragging = true;
+            pos = e.clientX;
+          }
+
+          // TODO I wonder how inefficient this is...
+          //      how efficient is refreshing every time this event is fired?
+          //      should refresh be on an interval loop?
+          $document.bind('mousemove', function(e) {
+              if (dragging) {
+                // Use $apply to execute this DOM event within Angular's digest cycle.
+                $scope.$apply(function(s) {
+                    var p = (pos - e.clientX) / $element.width();
+                    var d = s.position.max * p;
+                    s.position.shift(d * -1);
+                });
+                pos = e.clientX;
+              }
+          });
+
+          $document.bind('mouseup', function(e) {
+              dragging = false;
+          });
+      },
       link: function(scope, elem, attrs, controller) {
         scope.$watch('position', function(position) {
 
@@ -174,6 +206,7 @@ angular.module('Chet', []).
       },
     }
   }).
+  // TODO this could ditch the template and just act on the element which it's attached to
   directive('chetDragPosition', function() {
     return {
       // TODO this one might be useful as an attribute
