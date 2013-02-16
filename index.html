@@ -17,7 +17,10 @@
     <input size='3' ng-model='pos.start'></input>
     <input size='3' ng-model='pos.end'></input>
 
+
     <button ng-click='addTrack()'>Add Track</button>
+
+    <chet-zoomer position='pos'></chet-zoomer>
 
     <!-- TODO chet-drag-position is a great start, but an overview will probably be better -->
     <chet-drag-position position='pos'>

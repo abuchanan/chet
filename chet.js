@@ -73,7 +73,6 @@ angular.module('Chet', []).
 
           $scope.points = [];
           $scope.$watch('position', function(position) {
-
               var res = $scope.server.getCoverageForInterval(position);
 
               var points = [];
@@ -87,8 +86,6 @@ angular.module('Chet', []).
               });
 
               $scope.points = points;
-
-
           }, true);
       },
 
@@ -131,6 +128,28 @@ angular.module('Chet', []).
       },
     }
   }).
+  directive('chetZoomer', function() {
+    return {
+      restrict: 'E',
+      scope: {
+        position: '=',
+      },
+      templateUrl: 'zoomer.html',
+      link: function(scope, elem, attrs, ctrl) {
+        scope.zoomOut = function() {
+          // TODO zoom function on position?
+          scope.position.start -= 10;
+          scope.position.end += 10;
+        }
+
+        scope.zoomIn = function() {
+          // TODO zoom function on position?
+          scope.position.start += 10;
+          scope.position.end -= 10;
+        }
+      },
+    }
+  }).
   directive('chetDragPosition', function() {
     return {
       // TODO this one might be useful as an attribute
@@ -140,12 +159,12 @@ angular.module('Chet', []).
         position: '=',
       },
       templateUrl: 'position_drag.html',
+      controller: function($scope, $document) {
 
-      link: function(scope, elem, attrs, controller) {
           var dragging = false;
           var pos = 0;
 
-          scope.startDrag = function(e) {
+          $scope.startDrag = function(e) {
             dragging = true;
             pos = e.clientX;
           }
@@ -153,18 +172,20 @@ angular.module('Chet', []).
           // TODO I wonder how inefficient this is...
           //      how efficient is refreshing every time this event is fired?
           //      should refresh be on an interval loop?
-          scope.updateDrag = function(e) {
-            if (dragging) {
-              scope.position.shift(pos - e.clientX);
-              pos = e.clientX;
-            }
-          }
+          $document.bind('mousemove', function(e) {
+              if (dragging) {
+                // Use $apply to execute this DOM event within Angular's digest cycle.
+                $scope.$apply(function(s) {
+                    s.position.shift(pos - e.clientX);
+                });
+                pos = e.clientX;
+              }
+          });
 
-          scope.stopDrag = function() {
-            dragging = false;
-          }
+          $document.bind('mouseup', function(e) {
+              dragging = false;
+          });
       },
-
     };
   });
 
