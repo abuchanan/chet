@@ -4,9 +4,12 @@
     padding: 10px 0;
 }
 
-.track-label {
+.track-header {
     font-size: .8em;
     padding: 2px 5px;
+    background-color: #eee;
+}
+.track-settings {
     background-color: #eee;
 }
 

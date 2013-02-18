@@ -1,3 +1,4 @@
-<chet-track label='Coverage'>
+<!-- TODO I'm not convinced that it's best to have this <chet-track> tag here instead of in the parent template (instance.html in this case).  Seems like it's just going to be a frequent duplication of code. -->
+<chet-track label='{{ name }}'>
   <canvas chet-coverage-canvas-control points='points' class='coverage-track-canvas'></canvas>
 </chet-track>

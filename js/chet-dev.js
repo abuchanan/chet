@@ -12,11 +12,28 @@ angular.module('ChetDev', ['Chet', 'ngMockE2E']).
 
     $httpBackend.whenGET('instance/1').respond({
         tracks: [
-          {type: 'chet-gene-track', server: 'serverA'},
-          {type: 'chet-gene-track', server: 'serverB'},
-          {type: 'chet-coverage-track', server: 'serverC'},
+          {type: 'chet-gene-track', server: 'serverA', name: 'Genes A'},
+          {type: 'chet-gene-track', server: 'serverB', name: 'Genes B'},
+          {type: 'chet-coverage-track', server: 'serverC', name: 'Coverage C'},
         ],
     });
+
+    $httpBackend.whenGET('instance/2').respond({
+        tracks: [
+          {type: 'chet-gene-track', server: 'serverB', name: 'Blah Genes'},
+        ],
+    });
+
+    $httpBackend.whenGET('instance').respond([
+      {name: 'Dummy Instance 1', ID: 1},
+      {name: 'Dummy Instance 2', ID: 2},
+    ]);
+
+    $httpBackend.whenGET('presets').respond([
+      {type: 'chet-gene-track', server: 'serverA', name: 'Genes A'},
+      {type: 'chet-gene-track', server: 'serverB', name: 'Genes B'},
+      {type: 'chet-coverage-track', server: 'serverC', name: 'Coverage C'},
+    ]);
 
     $httpBackend.whenGET(/^templates\//).passThrough();
 

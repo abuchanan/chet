@@ -2,6 +2,8 @@
 <input size='3' ng-model='pos.start'/>
 <input size='3' ng-model='pos.end'/>
 
+<!-- UI for this should be an autocomplete box or something -->
+<select ng-model='selectedAddTrack' ng-options='t.name for t in availableTracks'></select>
 <button ng-click='addTrack()'>Add Track</button>
 
 <chet-zoomer position='pos'></chet-zoomer>

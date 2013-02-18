@@ -19,11 +19,11 @@ angular.module('ChetDirectives', []).
         var tpl = '';
 
         if (scope.config.type == 'chet-gene-track') {
-          tpl = "<chet-gene-track position='position' server='{{ config.server }}'></chet-gene-track>";
+          tpl = "<chet-gene-track position='position' server='{{ config.server }}' name='{{ config.name }}'></chet-gene-track>";
         }
 
         else if (scope.config.type == 'chet-coverage-track') {
-          tpl = "<chet-coverage-track position='position' server='{{ config.server }}'></chet-coverage-track>";
+          tpl = "<chet-coverage-track position='position' server='{{ config.server }}' name='{{ config.name }}'></chet-coverage-track>";
         }
 
         var c = $compile(tpl)(scope);
@@ -44,12 +44,14 @@ angular.module('ChetDirectives', []).
       restrict: 'E',
       templateUrl: 'templates/track.html',
       transclude: true,
-      replace: true,
       scope: {
         label: '@',
       },
-      link: function(scope, elem, attrs, controller) {
-        scope.label = 'Foo';
+      controller: function($scope) {
+        $scope.showSettings = false;
+        $scope.toggleSettings = function() {
+          $scope.showSettings = !$scope.showSettings;
+        }
       },
     };
   }).
@@ -142,6 +144,7 @@ angular.module('ChetDirectives', []).
       scope: {
         position: '=',
         server: '@',
+        name: '@',
       },
       controller: function($scope, Genes) {
 
@@ -230,10 +233,12 @@ angular.module('ChetDirectives', []).
       scope: {
         position: '=',
         server: '@',
+        name: '@',
       },
       controller: function($scope, Coverage) {
 
           $scope.points = [];
+          // TODO should be watching server too
           $scope.$watch('position', function(position) {
 
               var res = Coverage.get({db: $scope.server}, function() {

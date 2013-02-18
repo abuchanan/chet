@@ -13,7 +13,7 @@ angular.module('Chet', ['ChetServices', 'ChetDirectives']).
         templateUrl: 'templates/instances.html',
         controller: InstancesCtrl,
       }).
-      when('/instance/:instanceId', {
+      when('/instance/:instanceID', {
         templateUrl: 'templates/instance.html', 
         controller: InstanceCtrl,
       }).

@@ -1,10 +1,10 @@
-/*
 TODO
 
 
 think about UI for drag-to-select. there may be multiple (and possibly pluggable) actions for drag-to-select, e.g. zooming to a region vs. dump selection to FASTA
 
 coverage track zooming is buggy and probably completely incorrect
+bugs in scrolling too: genes and coverage tracks move at different rates
 
 refine overview design: doesn't need to have a lot of height
 
@@ -16,7 +16,18 @@ keyboard shortcuts
 
 
 track configuration
+
 pluggable track type config
+
+
+a way to get available reference IDs and position bounds of a track/set of tracks
+
+
+feedback interface.  allow users to submit feedback
+
+
+instances are user specific?
+- which means i need users?
 
 
 draw actual features
@@ -28,7 +39,6 @@ loading inidicators
 ruler
 
 URLs for linking to specific locations
-- browser instance url
 - instance location url
 
 gene info popups/hover
@@ -67,13 +77,19 @@ track config panel/pop-up
 
 actual, configurable track labels
 
-it'd be nice if tracks were interactive, e.g. when i hover over a coverage histogram,
-it displays the Y-axis value at that X.  This interactivity could conflict with
-dragging to pan though. if panning/zooming interaction was confined to an overview track?
+interactive coverage track: call out value of point nearest to cursor
 
 feature editor
 
 handle empty
+- if there are no features, container collapses to zero.  should be a min height
+- what if no tracks are shown?
+
+handle errors
+- server timeouts
+- invalid input (e.g. reference name)
+
+test out some actual data
 
 window size detection and response
 
@@ -81,7 +97,6 @@ dragging the offset so that elements are added/removed from the screen changes t
 ok, but might have effects on UX.  try to keep the viewer a reasonable height.
 could also make the features jump around as the packing is changed.
 
-if there are no features, container collapses to zero.  should be a min height
 
 groups of isoforms.  probably handled already
 
@@ -101,9 +116,9 @@ drag to pan: rough, needs testing
 multiple data sources: data source is inherent to URL
 
 histogram (coverage) track: rough draft done
-*/
 
 ----
+UNIT/INTERFACE TESTING NOTES
 
 when displaying a feature, the feature should not be drawn outside the bounds of the viewer.  same for end.
 
