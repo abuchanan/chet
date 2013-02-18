@@ -1,4 +1,7 @@
-angular.module('ChetDirectives', []).
+'use strict';
+
+
+angular.module('chet.directives', []).
 
 
   directive('chetDynamicTrack', ['$compile', function($compile) {
@@ -42,7 +45,7 @@ angular.module('ChetDirectives', []).
   directive('chetTrack', function($compile) {
     return {
       restrict: 'E',
-      templateUrl: 'templates/track.html',
+      templateUrl: 'partials/track.html',
       transclude: true,
       scope: {
         label: '@',
@@ -60,7 +63,7 @@ angular.module('ChetDirectives', []).
   directive('chetOverview', function($compile) {
     return {
       restrict: 'E',
-      templateUrl: 'templates/overview.html',
+      templateUrl: 'partials/overview.html',
       scope: {
         position: '=',
       },
@@ -140,7 +143,7 @@ angular.module('ChetDirectives', []).
   directive('chetGeneTrack', function() {
     return {
       restrict: 'E',
-      templateUrl: 'templates/gene_track.html',
+      templateUrl: 'partials/gene_track.html',
       scope: {
         position: '=',
         server: '@',
@@ -229,7 +232,7 @@ angular.module('ChetDirectives', []).
   directive('chetCoverageTrack', function() {
     return {
       restrict: 'E',
-      templateUrl: 'templates/coverage_track.html',
+      templateUrl: 'partials/coverage_track.html',
       scope: {
         position: '=',
         server: '@',
@@ -306,7 +309,7 @@ angular.module('ChetDirectives', []).
       scope: {
         position: '=',
       },
-      templateUrl: 'templates/zoomer.html',
+      templateUrl: 'partials/zoomer.html',
       link: function(scope, elem, attrs, ctrl) {
         scope.zoomOut = function() {
           // TODO zoom function on position?
@@ -333,7 +336,7 @@ angular.module('ChetDirectives', []).
       scope: {
         position: '=',
       },
-      templateUrl: 'templates/position_drag.html',
+      templateUrl: 'partials/position_drag.html',
       controller: function($scope, $document) {
 
           var dragging = false;

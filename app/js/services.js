@@ -1,4 +1,7 @@
-angular.module('ChetServices', ['ngResource']).
+'use strict';
+
+
+angular.module('chet.services', ['ngResource']).
 
   // TODO list available databases
   //      how does this work across genes and coverage and whatever else?

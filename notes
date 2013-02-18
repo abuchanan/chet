@@ -17,8 +17,12 @@ keyboard shortcuts
 
 track configuration
 
+use strict
+
 pluggable track type config
 
+
+proper injection to protect against minification munging
 
 a way to get available reference IDs and position bounds of a track/set of tracks
 
@@ -136,3 +140,21 @@ this is an interesting case where the easily testable approach isn't the easiest
 when features are no longer visible, their dom elements should be deleted.
 
 in some cases, it might make sense to keep them around, if they are just outside the visible range.
+
+
+----
+OTHER
+
+
+
+// NOTE always namespace directives.  I spent an hour figuring out that <track> was buggy because it's an existing HTML tag
+//      would be nice to have something that checks directives and warns about this
+
+
+closing tags are important on directives
+
+
+
+;// TODO http://codereview.stackexchange.com/
+//      http://jsfiddle.net/IgorMinar/ADukg/
+//      http://jsfiddle.net/pkozlowski_opensource/hzxNa/1/

@@ -1,4 +1,4 @@
-angular.module('ChetDev', ['Chet', 'ngMockE2E']).
+angular.module('chet.dev', ['chet', 'ngMockE2E']).
   run(function($httpBackend) {
 
     var x = serverC.getCoverageForInterval({start: 10, end: 700});
@@ -35,7 +35,7 @@ angular.module('ChetDev', ['Chet', 'ngMockE2E']).
       {type: 'chet-coverage-track', server: 'serverC', name: 'Coverage C'},
     ]);
 
-    $httpBackend.whenGET(/^templates\//).passThrough();
+    $httpBackend.whenGET(/^partials\//).passThrough();
 
   });
 
