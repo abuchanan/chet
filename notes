@@ -2,11 +2,17 @@
 TODO
 
 
-overview: drag to pan
-draggable edges for zooming
-maybe scroll here triggers zoom?
-problem here is that it'd be more useful to drag-select in an overview, with
-drag-pan in the tracks viewer
+think about UI for drag-to-select. there may be multiple (and possibly pluggable) actions for drag-to-select, e.g. zooming to a region vs. dump selection to FASTA
+
+coverage track zooming is buggy and probably completely incorrect
+
+refine overview design: doesn't need to have a lot of height
+
+zoom levels and slider
+
+keyboard shortcuts
+- pan left/right
+- zoom
 
 
 track configuration

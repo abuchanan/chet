@@ -1,0 +1,12 @@
+<input size='3' ng-model='pos.ref'/>
+<input size='3' ng-model='pos.start'/>
+<input size='3' ng-model='pos.end'/>
+
+<button ng-click='addTrack()'>Add Track</button>
+
+<chet-zoomer position='pos'></chet-zoomer>
+<chet-overview position='pos'></chet-overview>
+
+<chet-drag-position position='pos'>
+  <chet-dynamic-track position='pos' config='track' ng-repeat='track in tracks'></chet-dynamic-track>
+</chet-drag-position>

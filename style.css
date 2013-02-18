@@ -1,3 +1,5 @@
+/* TODO scss */
+
 .track {
     padding: 10px 0;
 }
@@ -21,15 +23,41 @@
     position: absolute;
 }
 
+/* TODO better overview cursors */
 .overview {
     border: 1px solid black;
     height: 50px;
     overflow: hidden;
 }
+
 .overview-visible {
-    background-color: yellow;
     height: 100%;
     width: 20%;
     position: relative;
     left: 20%;
+}
+.overview-zoom-left-handle {
+    height: 100%;
+    background-color: blue;
+  width: 10px;
+  float: left;
+}
+.overview-pan-handle {
+    height: 100%;
+    background-color: yellow;
+    /* TODO there's some bug with this width I think.  When this div gets too small,
+            the right zoom handle disappears */
+  width: 80%;
+  float: left;
+}
+.overview-zoom-right-handle {
+    height: 100%;
+    background-color: blue;
+  float: left;
+  width: 10px;
+}
+
+.coverage-track-canvas {
+  width: 100%;
+  height: 100px;
 }
