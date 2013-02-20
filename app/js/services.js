@@ -11,7 +11,9 @@ angular.module('chet.services', ['ngResource']).
   }).
 
   factory('Genes', function($resource) {
-    return $resource('genes/:db');
+    return $resource('genes/:db/:action', {action: 'data'}, {
+        sizes: {method: 'GET', params: {action: 'sizes'}, isArray: false},
+    });
   }).
 
   factory('Coverage', function($resource) {

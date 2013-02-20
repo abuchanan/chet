@@ -1,14 +1,32 @@
 angular.module('chet.dev', ['chet', 'ngMockE2E']).
   run(function($httpBackend) {
 
-    var x = serverC.getCoverageForInterval({start: 10, end: 700});
-    $httpBackend.whenGET('coverage/serverC').respond(x);
+    $httpBackend.whenGET(/coverage\/serverC/).respond(function(method, url, data) {
+        var p = parseUri(url).queryKey;
+        var start = parseInt(p.start);
+        var end = parseInt(p.end);
+        var x = serverC.getCoverageForInterval({ref: p.ref, start: start, end: end});
+        return [200, angular.toJson(x), {}];
+    });
 
-    var x = serverA.getGenesInInterval({ref: 'ref1', start: 10, end: 700});
-    $httpBackend.whenGET('genes/serverA').respond(x);
+    $httpBackend.whenGET(/genes\/serverA\/data/).respond(function(method, url, data) {
+        var p = parseUri(url).queryKey;
+        var start = parseInt(p.start);
+        var end = parseInt(p.end);
+        var x = serverA.getGenesInInterval({ref: p.ref, start: start, end: end});
+        return [200, angular.toJson(x), {}];
+    });
 
-    var x = serverB.getGenesInInterval({ref: 'ref1', start: 10, end: 700});
-    $httpBackend.whenGET('genes/serverB').respond(x);
+    $httpBackend.whenGET('genes/serverA/sizes').respond(tair10.A.sizes);
+    $httpBackend.whenGET('genes/serverB/sizes').respond(tair10.B.sizes);
+
+    $httpBackend.whenGET(/genes\/serverB\/data/).respond(function(method, url, data) {
+        var p = parseUri(url).queryKey;
+        var start = parseInt(p.start);
+        var end = parseInt(p.end);
+        var x = serverB.getGenesInInterval({ref: p.ref, start: start, end: end});
+        return [200, angular.toJson(x), {}];
+    });
 
     $httpBackend.whenGET('instance/1').respond({
         tracks: [
@@ -51,12 +69,12 @@ var DummyGeneServer = function(genes) {
         var ret = [];
 
         if (genes[position.ref]) {
-          for (var i = 0; i < genes[position.ref].length; i++) {
-            var gene = genes[position.ref][i];
-            if (gene.start <= position.end && gene.end >= position.start) {
-                ret.push(gene);
+            for (var i = 0; i < genes[position.ref].length; i++) {
+                var gene = genes[position.ref][i];
+                if (gene.start <= position.end && gene.end >= position.start) {
+                    ret.push(gene);
+                }
             }
-          }
         }
 
         return ret;
@@ -64,32 +82,9 @@ var DummyGeneServer = function(genes) {
 };
 
 
-var serverA = new DummyGeneServer({
-  'ref1': [
-    {start: 50, end: 70},
-    {start: 60, end: 80},
-    {start: 90, end: 100},
-    {start: 500, end: 570},
-    {start: 1500, end: 1570},
-  ],
-  'ref2': [
-    {start: 40, end: 90},
-    {start: 60, end: 80},
-    {start: 200, end: 570},
-    {start: 1500, end: 1570},
-  ],
-});
+var serverA = new DummyGeneServer(tair10.A.genes);
 
-var serverB = new DummyGeneServer({
-  'ref1': [
-    {start: 50, end: 70},
-    {start: 60, end: 80},
-  ],
-  'ref2': [
-    {start: 40, end: 90},
-    {start: 60, end: 80},
-  ],
-});
+var serverB = new DummyGeneServer(tair10.B.genes);
 
 function DummyCoverageServer() {
     var max = 100;
@@ -111,6 +106,7 @@ function DummyCoverageServer() {
         var start = Math.max(Math.floor(position.start / interval), 0);
         // TODO shouldn't this be ceiling?
         var end = Math.floor(position.end / interval);
+
         return {
           start: start * interval,
           end: end * interval,

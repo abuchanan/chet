@@ -9,11 +9,15 @@ function ChetPosition(ref, start, end) {
   this.ref = ref;
   this.start = start;
   this.end = end;
+  // TODO this is an arbitrary
   this.max = 8000;
 }
 ChetPosition.prototype = {
     get width() {
       return this.end - this.start;
+    },
+    maxHint: function(max) {
+      this.max = Math.max(max, this.max);
     },
     shift: function(amount) {
       var w = this.width;
@@ -35,8 +39,22 @@ function InstanceCtrl($routeParams, $scope, $location, Instance, Presets) {
     $scope.tracks = instance.tracks;
   });
 
-  var pos = new ChetPosition('ref1', 0, 700);
+  var pos = new ChetPosition('Chr1', 2000, 10000);
   $scope.pos = pos;
+
+  $scope.$watch('pos', function(pos) {
+    $scope.raw_position = pos.ref + ':' + pos.start + '-' + pos.end;
+  }, true);
+
+  $scope.updatePos = function() {
+    // TODO define proper regex for reference name
+    var m = $scope.raw_position.match(/^([a-zA-Z0-9]+):(\d+)-(\d+)$/);
+    if (m) {
+      $scope.pos.ref = m[1];
+      $scope.pos.start = parseInt(m[2]);
+      $scope.pos.end = parseInt(m[3]);
+    }
+  }
 
   $scope.availableTracks = Presets.query(function() {
     $scope.selectedAddTrack = $scope.availableTracks[0];

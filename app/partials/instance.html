@@ -1,6 +1,4 @@
-<input size='3' ng-model='pos.ref'/>
-<input size='3' ng-model='pos.start'/>
-<input size='3' ng-model='pos.end'/>
+<input ng-model='raw_position' ng-change='updatePos()'/>
 
 <!-- UI for this should be an autocomplete box or something -->
 <select ng-model='selectedAddTrack' ng-options='t.name for t in availableTracks'></select>

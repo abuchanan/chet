@@ -67,11 +67,20 @@ angular.module('chet.directives', []).
       scope: {
         position: '=',
       },
-      controller: function($scope, $element, $document) {
+      controller: function($scope, $element, $document, $timeout) {
 
-          var dragType = '';
           var dragging = false;
+          var panning_left = false;
+          var panning_right = false;
+
+          // TODO increase pan_amount with time mouse is held down
+          var pan_amount = 10;
+          var pan_delay = 50;
+
           var pos = 0;
+          // TODO try an draggable overview strip that constantly pans
+          //      instead of the absolute pan. distance from initial mousedown
+          //      determines velocity of pan
 
           // TODO shifted position needs to be relative to the scale of the viewer
           //      e.g. 1 px on a 1 to 1 million scale is a bigger jump than
@@ -79,61 +88,62 @@ angular.module('chet.directives', []).
           $scope.startPanDrag = function(e) {
             dragging = true;
             pos = e.clientX;
-            dragType = 'pan';
           }
 
-          $scope.startZoomLeftDrag = function(e) {
-            dragging = true;
-            pos = e.clientX;
-            dragType = 'zoom-left';
+          function panLeft() {
+              if (panning_left) {
+                  $scope.position.shift(pan_amount * -1);
+                  $timeout(panLeft, pan_delay);
+              }
           }
 
-          $scope.startZoomRightDrag = function(e) {
-            dragging = true;
-            pos = e.clientX;
-            dragType = 'zoom-right';
+          $scope.startPanLeft = function() {
+              panning_left = true;
+              panLeft();
+          }
+
+          function panRight() {
+              if (panning_right) {
+                  $scope.position.shift(pan_amount);
+                  $timeout(panRight, pan_delay);
+              }
+          }
+
+          $scope.startPanRight = function() {
+              panning_right = true;
+              panRight();
           }
 
           // TODO I wonder how inefficient this is...
           //      how efficient is refreshing every time this event is fired?
           //      should refresh be on an interval loop?
           $document.bind('mousemove', function(e) {
+
               if (dragging) {
+
                 // Use $apply to execute this DOM event within Angular's digest cycle.
                 $scope.$apply(function(s) {
+
                     var p = (pos - e.clientX) / $element.width();
-                    var d = s.position.max * p;
-
-                    switch (dragType) {
-                      case 'pan':
-                        s.position.shift(d * -1);
-                        break;
-
-                      case 'zoom-left':
-                        s.position.start -= d;
-                        break;
-                        
-                      case 'zoom-right':
-                        s.position.end -= d;
-                        break;
-                    }
+                    var d = Math.floor(s.position.width * p);
+                    s.position.shift(d * -1);
                 });
+
                 pos = e.clientX;
               }
           });
 
           $document.bind('mouseup', function(e) {
               dragging = false;
+              panning_left = false;
+              panning_right = false;
           });
       },
       link: function(scope, elem, attrs, controller) {
         scope.$watch('position', function(position) {
 
-            var start = position.start / position.max * 100;
-            var end = position.end / position.max * 100;
-            elem.find('.overview-visible').css('left', start + '%');
-            elem.find('.overview-visible').width(end - start + '%');
-
+            var start = Math.floor(position.start / position.max * 100);
+            var end = Math.floor(position.end / position.max * 100);
         }, true);
       },
     };
@@ -210,7 +220,23 @@ angular.module('chet.directives', []).
           }
 
           this.refresh = function() {
-            var genes = Genes.query({db: $scope.server}, function() {
+
+            // TODO I don't like this.  this stuff should be part of track
+            //      initialization
+            var sizes = Genes.sizes({db: $scope.server}, function() {
+                var ref = $scope.position.ref;
+                if (ref in sizes) {
+                    $scope.position.maxHint(sizes[ref]);
+                }
+            });
+
+            var q = {
+                db: $scope.server,
+                ref: $scope.position.ref,
+                start: $scope.position.start,
+                end: $scope.position.end,
+            };
+            var genes = Genes.query(q, function() {
               draw(genes);
             });
           }
@@ -244,15 +270,23 @@ angular.module('chet.directives', []).
           // TODO should be watching server too
           $scope.$watch('position', function(position) {
 
-              var res = Coverage.get({db: $scope.server}, function() {
+              var q = {
+                  db: $scope.server,
+                  ref: $scope.position.ref,
+                  start: $scope.position.start,
+                  end: $scope.position.end,
+              };
+              var res = Coverage.get(q, function() {
 
                   var points = [];
                   angular.forEach(res.points, function(pt, i) {
+
                       var pt_x = res.start + (i * res.interval);
                       var x = pt_x - position.start;
+
                       points.push({
-                        x: x,
-                        y: pt,
+                          x: x,
+                          y: pt,
                       });
                   });
 
@@ -269,6 +303,9 @@ angular.module('chet.directives', []).
     return {
       require: '^chetCoverageTrack',
       scope: {
+        // TODO I don't like that I have to pass in position here
+        //      especially because it's passed into the parent control too
+        position: '=',
         points: '=',
       },
       link: function(scope, elem, attrs, ctrl) {
@@ -280,21 +317,31 @@ angular.module('chet.directives', []).
 
           scope.$watch('points', function(pts) {
 
-              // TODO dynamic canvas dimensions
               ctx.clearRect(0, 0, canvas.width, canvas.height);
 
               if (pts.length > 0) {
                   ctx.beginPath();
 
-                  ctx.moveTo(pts[0].x, canvas.height);
+                  var first_x = (pts[0].x / scope.position.width) * canvas.width;
+                  ctx.moveTo(first_x, canvas.height);
 
+                  var y_max = 0;
                   angular.forEach(pts, function(pt) {
-                      // TODO normalize pt to height/scale of canvas
-                      ctx.lineTo(pt.x, pt.y);
+                      if (pt.y > y_max) {
+                          y_max = pt.y;
+                      }
                   });
 
-                  ctx.lineTo(canvas.width, canvas.height);
-                  ctx.lineTo(0, canvas.height);
+                  var last_x = canvas.width;
+                  angular.forEach(pts, function(pt) {
+                      var x = (pt.x / scope.position.width) * canvas.width;
+                      var y = canvas.height - ((pt.y / y_max) * canvas.height);
+                      last_x = x;
+                      ctx.lineTo(x, y);
+                  });
+
+                  ctx.lineTo(last_x, canvas.height);
+                  ctx.lineTo(first_x, canvas.height);
                   ctx.fill();
               }
           });
@@ -337,7 +384,7 @@ angular.module('chet.directives', []).
         position: '=',
       },
       templateUrl: 'partials/position_drag.html',
-      controller: function($scope, $document) {
+      controller: function($scope, $document, $element) {
 
           var dragging = false;
           var pos = 0;
@@ -350,13 +397,19 @@ angular.module('chet.directives', []).
           // TODO I wonder how inefficient this is...
           //      how efficient is refreshing every time this event is fired?
           //      should refresh be on an interval loop?
+          // TODO duplicated code with overview
           $document.bind('mousemove', function(e) {
+
               if (dragging) {
-                // Use $apply to execute this DOM event within Angular's digest cycle.
-                $scope.$apply(function(s) {
-                    s.position.shift(pos - e.clientX);
-                });
-                pos = e.clientX;
+
+                  // Use $apply to execute this DOM event within Angular's digest cycle.
+                  $scope.$apply(function(s) {
+
+                      var p = (pos - e.clientX) / $element.width();
+                      var d = Math.floor(s.position.width * p);
+                      s.position.shift(d);
+                  });
+                  pos = e.clientX;
               }
           });
 
@@ -365,4 +418,50 @@ angular.module('chet.directives', []).
           });
       },
     };
+  }).
+  directive('chetRuler', function() {
+      return {
+          restrict: 'E',
+          transclude: true,
+          scope: {
+              position: '=',
+          },
+          templateUrl: 'partials/ruler.html',
+          controller: function($scope, $element, $compile) {
+              var div = $element.find('.ruler-ticks');
+
+              $scope.$watch('position', function(pos) {
+
+                  // TODO this needs to match the (visual) scale of the highlighted
+                  //      overview area
+                  var a = pos.start - 5000;
+                  var b = pos.end + 5000;
+
+                  // TODO this needs to respond to the width of the visible area
+                  //      e.g. if the visible area is 50, then 1000 bp chunks is way
+                  //           too big, and if it's 1000000, then 1000 is too small.
+                  var chunk = 1000;
+
+                  var bottom = Math.ceil(a / 1000) * 1000;
+                  var top = Math.floor(b / 1000) * 1000;
+
+                  div.html('');
+
+                  var c = ((top - bottom) / 1000) + 1
+                  for (var i = 0; i < c; i++) {
+
+                      // TODO do this with ng-repeat
+                      var j = (i * 1000) + bottom;
+                      var html = "<span class='ruler-tick'>" + j + "</span>";
+                      var e = angular.element(html);
+
+                      var p = ((j - a) / (b - a)) * 100;
+                      e.css('left', p + '%');
+
+                      div.append(e);
+                  }
+
+              }, true);
+          },
+      };
   });
