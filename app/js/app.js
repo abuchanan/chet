@@ -1,7 +1,7 @@
 'use strict';
 
 
-angular.module('chet', ['chet.services', 'chet.directives']).
+angular.module('chet', ['chet.filters', 'chet.services', 'chet.directives']).
   config(function($routeProvider) {
     $routeProvider.
       when('/instances', {
@@ -11,6 +11,10 @@ angular.module('chet', ['chet.services', 'chet.directives']).
       when('/instance/:instanceID', {
         templateUrl: 'partials/instance.html', 
         controller: InstanceCtrl,
+      }).
+      when('/instance/:instanceID/settings', {
+        templateUrl: 'partials/instance_settings.html', 
+        controller: InstanceSettingsCtrl,
       }).
       otherwise({redirectTo: '/instances'});
   });

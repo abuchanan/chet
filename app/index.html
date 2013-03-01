@@ -5,44 +5,24 @@
   <meta charset='utf-8'>
   <title>Chet</title>
 
-  <link rel='stylesheet' href='css/angular-ui.css'>
+  <!-- TODO move bootstrap stuff to lib/ -->
+  <link rel='stylesheet' href='css/bootstrap.css'>
   <link rel='stylesheet' href='css/app.css'>
 
 </head>
 
-<body xmlns='http://www.w3.org/2000/svg'>
+<body>
   <div ng-view></div>
-
-  <style>.target { mask: url(#m1); }</style>
-
-  <svg height='0'>
-    <mask id='m1' maskUnits='objectBoundingBox' maskContentUnits='objectBoundingBox'>
-      <linearGradient id='g' gradientUnits='objectBoundingBox' x2='1' y2='0'>
-        <stop stop-color='white' stop-opacity='0.5' offset='0'/>
-        <stop stop-color='white' stop-opacity='0.5' offset='0.35'/>
-        <stop stop-color='white' offset='0.35' />
-        <stop stop-color='white' offset='0.65' />
-        <stop stop-color='white' stop-opacity='0.5' offset='0.65'/>
-        <stop stop-color='white' stop-opacity='0.5' offset='1'/>
-      </linearGradient>
-      <rect x="0" y="0" width="1" height="1.1" fill="url(#g)"/>
-    </mask>
-  </svg>
-
-  <style>.targetb { clip-path: url(#c1); }</style>
-  <svg height="0">
-    <clipPath id="c1" clipPathUnits="objectBoundingBox">
-      <rect x="0.35" y="0" width="0.3" height="1"/>
-    </clipPath>
-  </svg>
 
   <script src='lib/jquery.js'></script>
   <script src='lib/parseuri.js'></script>
+  <script src='lib/bootstrap.js'></script>
   <script src="lib/angular/angular.js"></script>
   <script src="lib/angular/angular-resource.js"></script>
   <script src="lib/angular/angular-mocks.js"></script>
 
   <script src="js/app.js"></script>
+  <script src="js/filters.js"></script>
   <script src="js/services.js"></script>
   <script src="js/controllers.js"></script>
   <script src="js/directives.js"></script>

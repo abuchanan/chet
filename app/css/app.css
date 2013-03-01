@@ -1,10 +1,11 @@
 /* TODO scss */
 body {
   background-color: #eee;
+  padding: 5px;
 }
 
 .track {
-    padding: 10px 0;
+    padding: 20px 0;
     background-color: #fff;
 }
 
@@ -35,36 +36,78 @@ body {
 }
 
 .ruler {
-  height: 20px;
+  background-color: #fff;
+  height: 15px;
+  overflow: hidden;
 }
 
 .ruler-ticks {
   position: relative;
-  font-size: 0.9em;
+  font-size: 0.8em;
 }
 
 .ruler-tick {
   position: absolute;
-  height: 20px;
-  border-left: 1px solid #bbb;
+  height: 15px;
+  border-left: 1px solid #777;
   padding-left: 3px;
+  color: #777;
+  line-height: 15px;
 }
 
 .overview {
-    overflow: hidden;
+  overflow: hidden;
 }
 
-.overview .ruler {
-  background: linear-gradient(to right,
-      rgba(0,0,0,0) 0%,
-      rgba(0,0,0,0) 35%,
-      rgba(255,255,255,1) 35%,
-      rgba(255,255,255,1) 65%,
-      rgba(0,0,0,0) 65%,
-      rgba(0,0,0,0) 100%);
-  padding-top: 5px;
+.overview-box {
+  background-color: red;
+  opacity: 0.3;
+  height: 20px;
+  position: relative;
 }
 
+.overview-pan-left-handle {
+  position: absolute;
+  left: 0;
+  height: 100%;
+  width: 25px;
+  background-color: black;
+}
+
+.overview-pan-right-handle {
+  position: absolute;
+  right: 0;
+  height: 100%;
+  width: 25px;
+  background-color: black;
+}
+
+.chet-zoomer-container {
+  width: 150px;
+  position: relative;
+  margin: 3px 0;
+}
+
+.chet-zoomer-bar {
+  height: 10px;
+}
+
+.scroll-pane-wrapper {
+  height: 480px;
+  overflow: hidden;
+}
+.scroll-pane-sticky {
+  position: relative;
+  height: 500px;
+}
+
+.chet-zoomer-handle {
+  height: 17px;
+  width: 10px;
+  background-color: #565656;
+  position: absolute;
+  top: -3px;
+}
 /*
 // FF3.6+
 background: -moz-linear-gradient(top,  rgba(0,0,0,1) 0%, rgba(0,0,0,1) 36%, rgba(128,128,128,1) 37%, rgba(255,255,255,0.5) 38%, rgba(255,255,255,0) 39%, rgba(255,255,255,0) 50%, rgba(255,255,255,0) 64%, rgba(128,128,128,0) 65%, rgba(0,0,0,0.33) 66%, rgba(0,0,0,1) 68%, rgba(0,0,0,1) 100%);

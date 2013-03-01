@@ -1,14 +1,40 @@
-<input ng-model='raw_position' ng-change='updatePos()'/>
 
 <!-- UI for this should be an autocomplete box or something -->
+<!--
 <select ng-model='selectedAddTrack' ng-options='t.name for t in availableTracks'></select>
 <button ng-click='addTrack()'>Add Track</button>
 
 <button ng-click='linkHere()'>Link Here</button>
+-->
 
-<chet-zoomer position='pos'></chet-zoomer>
-<chet-overview position='pos'></chet-overview>
+<div class='row-fluid'>
 
-<chet-drag-position position='pos'>
+  <div class='span10'>
+    <div class='input-append'>
+      <input type='text' placeholder='Command line' class='input-xlarge'/>
+      <button class='btn' type='button'>Do it</button>
+    </div>
+  </div>
+
+  <div class='span2' style='text-align: right; padding-right: 10px;'>
+    <a href="#/instance/{{ instanceID }}/settings" class='btn'><i class='icon-wrench'></i> Settings</a>
+  </div>
+
+
+</div>
+
+
+<chet-scroll-position position='pos'>
+  <chet-ruler position='pos'></chet-ruler>
   <chet-dynamic-track position='pos' config='track' ng-repeat='track in tracks'></chet-dynamic-track>
-</chet-drag-position>
+</chet-scroll-position>
+
+<div class='row-fluid'>
+
+  <div class='span2'>
+    <chet-zoomer position='pos'></chet-zoomer>
+  </div>
+  <div class='span10'>
+    <chet-overview position='pos'></chet-overview>
+  </div>
+</div>

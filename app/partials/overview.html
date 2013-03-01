@@ -1,30 +1,15 @@
-<div class='overview target'>
-   <!-- 
-  <div class='overview-visible'>
+<div class='overview'>
 
-    <div class='overview-position'>
-      <span class='start'>{{position.start | number}}</span>
-      <span class='ref'>{{position.ref}}</span>
-      <span class='end'>{{position.end | number}}</span>
+  <chet-ruler position='overview_position'>
+
+    <div class='overview-box'
+         ng-style='overview_box_style'
+         ng-mousedown='startPanDrag($event)'>
+
+      <span class='overview-pan-left-handle' ng-mousedown='startPanLeft()'></span>
+      <span class='overview-pan-right-handle' ng-mousedown='startPanRight()'></span>
     </div>
 
-    <div class='overview-pan-left-handle' ng-mousedown='startPanLeft()'>&lt;</div>
-    <div class='overview-pan-handle' ng-mousedown='startPanDrag($event)'></div>
-    <div class='overview-pan-right-handle' ng-mousedown='startPanRight()'>&gt;</div>
-    <div style='clear: both'></div>
-  </div>
-    -->
-
-  <!-- TODO things will probably end up better organized if div.visible is
-            a child of chet-ruler (via transclusion)
-            same for the pan left/right buttons and whatever else overlays the ruler
-
-            a possible problem with this is that the mask will need to adjust to this
-            but the pan handles will be in px, not %.
-  -->
-  <chet-ruler position='position'>
-    <div style='width: 20px; height: 20px; background-color: red; position: absolute; left: 35%;'></div>
-    <div style='width: 20px; height: 20px; background-color: red; position: absolute; right: 35%;'></div>
-
   </chet-ruler>
+
 </div>

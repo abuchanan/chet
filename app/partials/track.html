@@ -1,11 +1,15 @@
 <div class='track'>
 
   <div class='track-header'>
-    <span class='track-label'>{{label}}</span>
-    <span class='track-toolbar'>
-      <button ng-click='toggleSettings()'>Settings</button>
-    </span>
+    <div class='btn-group'>
+      <a class='btn btn-mini dropdown-toggle' data-toggle='dropdown' href='#'>{{ label }}<span class='caret'></span></a>
+      <ul class='dropdown-menu'>
+        <li><a>Hide</a></li>
+        <li><a>Settings</a></li>
+      </ul>
+    </div>
   </div>
+
   <div class='track-settings' ng-show='showSettings'>
     <label>Name</label>
     <input ng-model='label'/>

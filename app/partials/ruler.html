@@ -1,4 +1,6 @@
 <div class='ruler'>
-  <div class='ruler-ticks'></div>
+  <div class='ruler-ticks'>
+    <span class='ruler-tick' ng-repeat='tick in ticks' ng-style='tick.style'>{{ tick.label | abbreviateNumber }}</span>
+  </div>
   <div ng-transclude></div>
 </div>

@@ -69,18 +69,81 @@ angular.module('chet.directives', []).
       },
       controller: function($scope, $element, $document, $timeout) {
 
+          // TODO would be nice if overview had more graceful handling of 
+          //      positions near zero.  instead of showing large negative numbers,
+          //      it could shift the highlighted area to the left.
+
+          // TODO animate change of position
+
+
+          // TODO note that this scale is defined here, as well as separately
+          //      in the css background gradient.
+          //      would be nice to tie them together
+          var scale = .25;
+          var scale_edge = (1 - scale) / 2;
+
+          var op = new ChetPosition;
+          $scope.overview_position = op;
+
+          var p = $scope.position;
+
+          var b = p.start;
+
+
+          function update_overview() {
+              var x = (p.width / scale) * scale_edge;
+              op.start = p.start - x;;
+              op.end = p.end + x;
+          }
+
+
+          function update_box() {
+
+              var x = (b - op.start) / op.width;
+
+              $scope.overview_box_style = {
+                width: (scale * 100) + '%',
+                left: (x * 100) + '%',
+              };
+          }
+
+
+          $scope.$watch('position', function() {
+
+              op.ref = p.ref;
+              op.max = p.max;
+              b = p.start;
+
+              update_overview();
+              update_box();
+
+          }, true);
+
+
           var dragging = false;
-          var panning_left = false;
-          var panning_right = false;
+          var panning = false;
 
           // TODO increase pan_amount with time mouse is held down
-          var pan_amount = 10;
           var pan_delay = 50;
 
           var pos = 0;
-          // TODO try an draggable overview strip that constantly pans
-          //      instead of the absolute pan. distance from initial mousedown
-          //      determines velocity of pan
+
+          function watchEdges() {
+              var y = 0;
+              if (b < op.start) {
+                  y = -1;
+              } else if (b + p.width > op.end) {
+                  y = 1;
+              }
+
+              if (y) {
+                  var z = op.width * .005 * y;
+                  op.shift(z);
+                  b += z;
+                  update_box();
+              }
+              panning = $timeout(watchEdges, pan_delay);
+          }
 
           // TODO shifted position needs to be relative to the scale of the viewer
           //      e.g. 1 px on a 1 to 1 million scale is a bigger jump than
@@ -88,31 +151,10 @@ angular.module('chet.directives', []).
           $scope.startPanDrag = function(e) {
             dragging = true;
             pos = e.clientX;
+            panning = $timeout(watchEdges, pan_delay);
           }
 
-          function panLeft() {
-              if (panning_left) {
-                  $scope.position.shift(pan_amount * -1);
-                  $timeout(panLeft, pan_delay);
-              }
-          }
-
-          $scope.startPanLeft = function() {
-              panning_left = true;
-              panLeft();
-          }
-
-          function panRight() {
-              if (panning_right) {
-                  $scope.position.shift(pan_amount);
-                  $timeout(panRight, pan_delay);
-              }
-          }
-
-          $scope.startPanRight = function() {
-              panning_right = true;
-              panRight();
-          }
+          var el = $element.find('.overview')
 
           // TODO I wonder how inefficient this is...
           //      how efficient is refreshing every time this event is fired?
@@ -121,12 +163,11 @@ angular.module('chet.directives', []).
 
               if (dragging) {
 
-                // Use $apply to execute this DOM event within Angular's digest cycle.
-                $scope.$apply(function(s) {
+                var p = (e.clientX - pos) / el.width();
+                b += p * op.width;
 
-                    var p = (pos - e.clientX) / $element.width();
-                    var d = Math.floor(s.position.width * p);
-                    s.position.shift(d * -1);
+                $scope.$apply(function() {
+                    update_box();
                 });
 
                 pos = e.clientX;
@@ -134,17 +175,16 @@ angular.module('chet.directives', []).
           });
 
           $document.bind('mouseup', function(e) {
-              dragging = false;
-              panning_left = false;
-              panning_right = false;
-          });
-      },
-      link: function(scope, elem, attrs, controller) {
-        scope.$watch('position', function(position) {
 
-            var start = Math.floor(position.start / position.max * 100);
-            var end = Math.floor(position.end / position.max * 100);
-        }, true);
+              dragging = false;
+              $timeout.cancel(panning);
+
+              $scope.$apply(function(s) {
+                 
+                  p.shiftTo(b);
+                  update_box();
+              });
+          });
       },
     };
   }).
@@ -352,24 +392,96 @@ angular.module('chet.directives', []).
 
   directive('chetZoomer', function() {
     return {
-      restrict: 'E',
-      scope: {
-        position: '=',
-      },
-      templateUrl: 'partials/zoomer.html',
-      link: function(scope, elem, attrs, ctrl) {
-        scope.zoomOut = function() {
-          // TODO zoom function on position?
-          scope.position.start -= 10;
-          scope.position.end += 10;
-        }
+        restrict: 'E',
+        scope: {
+            position: '=',
+        },
+        templateUrl: 'partials/zoomer.html',
 
-        scope.zoomIn = function() {
-          // TODO zoom function on position?
-          scope.position.start += 10;
-          scope.position.end -= 10;
-        }
-      },
+        controller: function($scope, $element, $document) {
+
+            var percent = 15;
+
+            // TODO bar isn't clickable
+
+            // TODO slider scale is currently linear,
+            //      but should be logaritmic (exponential?)
+            var filled_color = 'rgba(255, 0, 0, 1)';
+            var empty_color = 'rgba(255, 255, 255, 1)';
+
+            function build_style() {
+                var s = 'linear-gradient(to right, ' + 
+                        filled_color + ' 0%, ' + 
+                        filled_color + ' ' + percent + '%, ' + 
+                        empty_color + ' ' + percent + '%, ' +
+                        empty_color + ' 100%)';
+
+                $scope.bar_style = {
+                  background: s,
+                };
+
+                var w = handle.width() / 2 / $element.width() * 100;
+                var z = percent - w;
+
+                $scope.handle_style = {
+                  left: z + '%',
+                }
+
+                /*
+                TODO 
+                var pos = $scope.position;
+                var mid = pos.start + (pos.width / 2);
+                var v = pos.max * (percent / 100) / 2;
+                pos.start -= v;
+                pos.end += v;
+                */
+            }
+
+            var handle = $element.find('.chet-zoomer-handle');
+
+            build_style();
+
+            var dragging = false;
+
+            $scope.startDrag = function(e) {
+              dragging = true;
+            }
+
+            $document.bind('mousemove', function(e) {
+
+                if (dragging) {
+
+                    // Use $apply to execute this DOM event within Angular's digest cycle.
+                    $scope.$apply(function() {
+
+                        percent = (e.clientX - $element.offset().left) / $element.width() * 100;
+                        if (percent < 0) {
+                            percent = 0;
+                        } else if (percent > 100) {
+                            percent = 100;
+                        }
+
+                        build_style();
+                    });
+                }
+            });
+
+            $document.bind('mouseup', function(e) {
+                dragging = false;
+            });
+
+            $scope.zoomOut = function() {
+              // TODO zoom function on position?
+              $scope.position.start -= 10;
+              $scope.position.end += 10;
+            }
+
+            $scope.zoomIn = function() {
+              // TODO zoom function on position?
+              $scope.position.start += 10;
+              $scope.position.end -= 10;
+            }
+        },
     }
   }).
 
@@ -419,6 +531,77 @@ angular.module('chet.directives', []).
       },
     };
   }).
+
+  // TODO this could ditch the template and just act on the element which it's attached to
+  directive('chetScrollPosition', function() {
+    return {
+      // TODO this one might be useful as an attribute
+      restrict: 'E',
+      transclude: true,
+      scope: {
+        position: '=',
+      },
+      templateUrl: 'partials/scroll_position.html',
+      controller: function($scope, $element, $timeout) {
+
+        // TODO this prevents scrolling below zero, but there are cases
+        //      when you might want to scroll a bit past zero,
+        //      e.g. to get a certain gene in the middle of the screen
+
+        // TODO initialize scroll position with track position
+        //      watch scope.position for change
+
+
+        // TODO up/down scrolling broken...fffuuuuuu
+        ///     ... sort of.  if the mouse moves, the focus changes or something,
+        //      and then it works again.
+
+        var pos = $scope.position;
+
+        var scroll_pane = $element.find('.scroll-pane');
+        var stickies = $element.find('.scroll-pane-sticky');
+
+        // This is helping prevent the scroll position from being set multiple
+        // times.  For example, if the user scrolls, the scroll event is caught
+        // below, and the position is updated, but we also watch for changes 
+        // to position and react by setting the scroll position.  This cycle
+        // seems to affect the user experience of scrolling.
+        // TODO: look for a more elegant way to solve this.  For now this works.
+        var scrolled = false;
+
+        $scope.$watch('position', function(newVal, oldVal) {
+
+            if (!scrolled) {
+                var p = (pos.start / pos.max) * scroll_pane[0].scrollWidth;
+                scroll_pane.scrollLeft(p);
+            }
+            //console.log(scroll_pane.scrollLeft());
+            //console.log((pos.start / pos.max) * scroll_pane[0].scrollWidth);
+        }, true);
+
+
+
+        function sc() {
+          scroll_pane.scrollLeft(scroll_pane.scrollLeft() + 50);
+          $timeout(sc, 50);
+        };
+
+        scroll_pane.scroll(function(e) {
+
+            var t = e.target;
+            stickies.css('left', t.scrollLeft + 'px');
+
+            scrolled = true;
+            $scope.$apply(function(s) {
+                pos.shiftTo(t.scrollLeft / t.scrollWidth * pos.max);
+            });
+            scrolled = false;
+        });
+
+      },
+    }
+  }).
+
   directive('chetRuler', function() {
       return {
           restrict: 'E',
@@ -427,39 +610,57 @@ angular.module('chet.directives', []).
               position: '=',
           },
           templateUrl: 'partials/ruler.html',
-          controller: function($scope, $element, $compile) {
-              var div = $element.find('.ruler-ticks');
+          controller: function($scope, $compile) {
+              $scope.ticks = [];
 
               $scope.$watch('position', function(pos) {
 
-                  // TODO this needs to match the (visual) scale of the highlighted
-                  //      overview area
-                  var a = pos.start - 5000;
-                  var b = pos.end + 5000;
+                  // TODO document this somewhere.
+                  var z = [1, 2.5, 5, 10];
+                  var order = Math.floor(Math.log(pos.width) / Math.log(10));
 
-                  // TODO this needs to respond to the width of the visible area
-                  //      e.g. if the visible area is 50, then 1000 bp chunks is way
-                  //           too big, and if it's 1000000, then 1000 is too small.
-                  var chunk = 1000;
+                  var best = null;
+                  var last = null;
 
-                  var bottom = Math.ceil(a / 1000) * 1000;
-                  var top = Math.floor(b / 1000) * 1000;
+                  for (var i = 0; i < z.length; i++) {
+                      var d = z[i] * Math.pow(10, order - 1);
+                      var x = pos.width / d;
+                      var a = Math.abs(10 - x);
 
-                  div.html('');
+                      if (!best) {
+                          best = d;
+                          last = a;
+                      } else if (a < last) {
+                          best = d;
+                          last = a;
+                      }
+                  }
 
-                  var c = ((top - bottom) / 1000) + 1
+                  var x = pos.width / 10;
+                  var chunk = best;
+
+                  var bottom = Math.ceil(pos.start / chunk) * chunk;
+                  var top = Math.floor(pos.end / chunk) * chunk;
+
+                  var c = ((top - bottom) / chunk) + 1
+                  var ticks = [];
                   for (var i = 0; i < c; i++) {
 
                       // TODO do this with ng-repeat
-                      var j = (i * 1000) + bottom;
-                      var html = "<span class='ruler-tick'>" + j + "</span>";
-                      var e = angular.element(html);
+                      var j = (i * chunk) + bottom;
 
-                      var p = ((j - a) / (b - a)) * 100;
-                      e.css('left', p + '%');
+                      var p = ((j - pos.start) / pos.width) * 100;
 
-                      div.append(e);
+                      var tick = {
+                        label: j,
+                        style: {
+                          left: p + '%',
+                        },
+                      };
+                      ticks.push(tick);
+
                   }
+                  $scope.ticks = ticks;
 
               }, true);
           },

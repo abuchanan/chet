@@ -10,7 +10,7 @@ function ChetPosition(ref, start, end) {
   this.start = start;
   this.end = end;
   // TODO this is an arbitrary
-  this.max = 8000;
+  this.max = 800000;
 }
 ChetPosition.prototype = {
     get width() {
@@ -23,12 +23,20 @@ ChetPosition.prototype = {
       var w = this.width;
       this.start += amount;
       this.end = this.start + w;
+    },
+    shiftTo: function(start) {
+      var w = this.width;
+      this.start = start;
+      this.end = this.start + w;
     }
 };
 
 
 function InstancesCtrl($scope, Instance) {
   $scope.instances = Instance.query();
+}
+
+function InstanceSettingsCtrl($scope) {
 }
 
 
@@ -39,14 +47,17 @@ function InstanceCtrl($routeParams, $scope, $location, Instance, Presets) {
     $scope.tracks = instance.tracks;
   });
 
-  var pos = new ChetPosition('Chr1', 2000, 10000);
+  $scope.instanceID = $routeParams.instanceID;
+
+  var pos = new ChetPosition('Chr1', 25000, 50000);
   $scope.pos = pos;
 
   $scope.$watch('pos', function(pos) {
-    $scope.raw_position = pos.ref + ':' + pos.start + '-' + pos.end;
+    $scope.raw_position = pos.ref + ' ' + pos.start + '-' + pos.end;
   }, true);
 
   $scope.updatePos = function() {
+    // TODO there is a bug in this position changer.  try changing 10000 to 50000 by replacing the 1 with a 5. because it becomes zero
     // TODO define proper regex for reference name
     var m = $scope.raw_position.match(/^([a-zA-Z0-9]+):(\d+)-(\d+)$/);
     if (m) {

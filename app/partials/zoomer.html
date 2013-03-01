@@ -1,4 +1,9 @@
-<div>
-  <button ng-click='zoomOut()'>-</button>
-  <button ng-click='zoomIn()'>+</button>
+<!--
+<button class='btn btn-mini' ng-click='zoomOut()'><i class='icon-minus'></i></button>
+<button class='btn btn-mini' ng-click='zoomIn()'><i class='icon-plus'></i></button>
+-->
+
+<div class='chet-zoomer-container'>
+  <div class='chet-zoomer-bar' ng-style='bar_style'></div>
+  <div class='chet-zoomer-handle' ng-style='handle_style' ng-mousedown='startDrag($event)'></div>
 </div>
