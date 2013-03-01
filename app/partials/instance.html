@@ -24,10 +24,15 @@
 </div>
 
 
+<!-- TODO could have a problem with drag-select here because child elements will intercept mouse click events.  or is that a good thing? -->
+<chet-drag-select position='pos'>
+
 <chet-scroll-position position='pos'>
   <chet-ruler position='pos'></chet-ruler>
   <chet-dynamic-track position='pos' config='track' ng-repeat='track in tracks'></chet-dynamic-track>
 </chet-scroll-position>
+
+</chet-drag-select>
 
 <div class='row-fluid'>
 

@@ -6,7 +6,6 @@ body {
 
 .track {
     padding: 20px 0;
-    background-color: #fff;
 }
 
 .track-header {
@@ -36,7 +35,6 @@ body {
 }
 
 .ruler {
-  background-color: #fff;
   height: 15px;
   overflow: hidden;
 }

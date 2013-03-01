@@ -56,7 +56,99 @@ angular.module('chet.directives', []).
           $scope.showSettings = !$scope.showSettings;
         }
       },
-    };
+    }
+  }).
+
+  // TODO create a separate highlightPane directive
+  directive('chetDragSelect', function() {
+    return {
+      restrict: 'E',
+      templateUrl: 'partials/drag_select.html',
+      transclude: true,
+      scope: {
+        position: '=',
+      },
+      controller: function($scope, $element, $document) {
+
+          var dragging = false;
+          var start = 0;
+          var end = 0;
+
+          var p = $scope.position;
+
+          var mousex = 0;
+          var mousey = 0;
+
+          $scope.startDrag = function(e) {
+              dragging = true;
+              start = (e.clientX / $element.width() * p.width) + p.start;
+              build_style(true);
+          }
+
+          // TODO I wonder how inefficient this is...
+          //      how efficient is refreshing every time this event is fired?
+          //      should refresh be on an interval loop?
+          // TODO duplicated code with overview
+          $document.bind('mousemove', function(e) {
+
+              if (dragging) {
+
+                  mousex = e.clientX;
+                  mousey = e.clientY;
+
+                  // Use $apply to execute this DOM event within Angular's digest cycle.
+                  $scope.$apply(function() {
+
+                      end = (mousex / $element.width() * p.width) + p.start;
+                      build_style();
+                  });
+              }
+          });
+
+          $scope.$watch('position', function() {
+              if (dragging) {
+                  end = (mousex / $element.width() * p.width) + p.start;
+              }
+              build_style();
+          }, true);
+
+          $document.bind('mouseup', function(e) {
+              dragging = false;
+          });
+
+          // TODO background gradient, or positioned child element?
+          function build_style(clear) {
+
+              // TODO doesn't update when position is scrolled
+              var lower_percent = 0;
+              var upper_percent = 0;
+
+              if (!clear) {
+                  // TODO there's some error in this calculation
+                  //      selection edge doesn't match pointer
+                  lower_percent = (start - p.start) / p.width * 100;
+                  upper_percent = (end - p.start) / p.width * 100;
+              }
+
+              var filled_color = 'rgba(255, 240, 140, 0.3)';
+              var empty_color = 'rgba(0, 0, 0, 0)';
+
+              var s = 'linear-gradient(to right, ' + 
+                      empty_color + ' 0%, ' + 
+                      empty_color + ' ' + lower_percent + '%, ' + 
+                      filled_color + ' ' + lower_percent + '%, ' + 
+                      filled_color + ' ' + upper_percent + '%, ' + 
+                      empty_color + ' ' + upper_percent + '%, ' +
+                      empty_color + ' 100%)';
+
+              $scope.pane_style = {
+                  background: s,
+              };
+          }
+
+
+      },
+    }
   }).
 
 
