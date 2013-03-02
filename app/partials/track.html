@@ -1,19 +1,19 @@
-<div class='track'>
+<div class='track' ng-show='track.show'>
 
   <div class='track-header'>
     <div class='btn-group'>
-      <a class='btn btn-mini dropdown-toggle' data-toggle='dropdown' href='#'>{{ label }}<span class='caret'></span></a>
+      <a class='btn btn-mini dropdown-toggle' data-toggle='dropdown' href='#'>{{ track.name }}<span class='caret'></span></a>
       <ul class='dropdown-menu'>
-        <li><a>Hide</a></li>
-        <li><a>Settings</a></li>
+        <li><a ng-click='toggleShow()'>Hide</a></li>
+        <li><a ng-click='toggleSettings()'>Settings</a></li>
       </ul>
     </div>
   </div>
 
   <div class='track-settings' ng-show='showSettings'>
     <label>Name</label>
-    <input ng-model='label'/>
+    <input ng-model='track.label'/>
   </div>
 
-  <div ng-transclude></div>
+  <div ng-include='track.template'></div>
 </div>

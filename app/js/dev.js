@@ -28,18 +28,18 @@ angular.module('chet.dev', ['chet', 'ngMockE2E']).
         return [200, angular.toJson(x), {}];
     });
 
+    var tracks = [
+      {template: 'partials/gene_track.html', server: 'serverA', name: 'Genes A', show: true},
+      {template: 'partials/gene_track.html', server: 'serverB', name: 'Genes B', show: true},
+      {template: 'partials/coverage_track.html', server: 'serverC', name: 'Coverage C', show: true},
+    ];
+
     $httpBackend.whenGET('instance/1').respond({
-        tracks: [
-          {type: 'chet-gene-track', server: 'serverA', name: 'Genes A'},
-          {type: 'chet-gene-track', server: 'serverB', name: 'Genes B'},
-          {type: 'chet-coverage-track', server: 'serverC', name: 'Coverage C'},
-        ],
+        tracks: tracks,
     });
 
     $httpBackend.whenGET('instance/2').respond({
-        tracks: [
-          {type: 'chet-gene-track', server: 'serverB', name: 'Blah Genes'},
-        ],
+        tracks: [tracks[1]],
     });
 
     $httpBackend.whenGET('instance').respond([
@@ -47,11 +47,7 @@ angular.module('chet.dev', ['chet', 'ngMockE2E']).
       {name: 'Dummy Instance 2', ID: 2},
     ]);
 
-    $httpBackend.whenGET('presets').respond([
-      {type: 'chet-gene-track', server: 'serverA', name: 'Genes A'},
-      {type: 'chet-gene-track', server: 'serverB', name: 'Genes B'},
-      {type: 'chet-coverage-track', server: 'serverC', name: 'Coverage C'},
-    ]);
+    $httpBackend.whenGET('presets').respond(tracks);
 
     $httpBackend.whenGET(/^partials\//).passThrough();
 
