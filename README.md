@@ -1,5 +1,3 @@
-# Chet
-
 Chet is a genome browser.  It is a new project, it's mostly incomplete at the moment.
 
 Briefly, the idea is to match the features of [GBrowse](http://gmod.org/wiki/GBrowse), with an improved user experience.
