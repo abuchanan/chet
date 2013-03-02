@@ -1,60 +1,5 @@
 TODO
 
-next: server-side and load some actual data
-
-after that: serious UI polish session
-
-
-
-UI only
-=======================
-
-drag-to-select and the actions that use it (e.g. zoom to region, dump to fasta)
-
-refine overview design: doesn't need to have a lot of height
-
-keyboard shortcuts
-- pan left/right
-- zoom
-
-scroll buttons, i.e. navigate left/right with mouse clicks
-
-pick really good colors
-
-draw actual features
-
-integrate twitter's bootstrap css
-loading inidicators
-
-ruler
-
-gene info popups/hover
-
-bug: dragging selects label text
-
-"link here" button
-- or update search params in URL on position change
-
-
-track configuration
-
-pluggable track type config
-
-onblur instead of onkeypress for ref + start + end
-
-draggable track order
-
-track buttons
-
-interactive coverage track
-- call out value of point nearest to cursor
-- change y-max
-
-
-handle empty
-- if there are no features, container collapses to zero.  should be a min height
-- what if no tracks are shown?
-
 handle errors
 - server timeouts
 - invalid input (e.g. reference name)
@@ -65,51 +10,23 @@ ok, but might have effects on UX.  try to keep the viewer a reasonable height.
 could also make the features jump around as the packing is changed.
 
 
-groups of isoforms.  what UI is needed for this?
-
-reference list, i.e. some way to list all available references and their sizes
-- is this dependent on the size of the tracks?  if so, what controls settings the max size and how does that request the max size of a track?
-
-ditch ref/start/end position input boxes.  with a good ruler + overview, this will be handled, and text input can happen in the same box as search. look at angular-ui's mask for this.
-
-look at angular-ui animate
-
 what should the "add track" UI be like?
 
-good default location for instances
-
-
-loading on every keypress, every mousemove event, is probably going to be way too much
-
-
-overview panel scale is broken
-
-there are cases where the genome is so big that the overview is useless because the visible portion will practically always be a tiny portion of the overall size.  this happens with tair 10. gbrowse handles this by providing a second "region" overview.  i always thought this took up too much real estate.  is there a better way?
-
-
-feature labels
-
-
-
-window size detection and response: think this works already. woot.
 
 there might be a bug with svg mask/clip. for some reason it was acting strangely when applied to div.ruler, but it works fine on div.overview.  figure out if this is a bug and report it
 
 
-something like coverage graph but for DGE, so it can have negative values
+
+https://groups.google.com/forum/#!msg/angular/tv4Nl1HouOw/i0MMmfkMrbUJ
+
 
 
 
 organization
 ==============
 
-move this stuff into github issues
-
-create some basic github documentation
-
-create a demo site
-
-define license
+start keeping a list of all the cool things i've worked with while working on chet
+to be part of a blog post on the first released version on chet
 
 
 
@@ -139,7 +56,6 @@ index.html is currently running with chet.dev.  obviously this shouldn't get che
 
 far future
 ===========
-feedback interface.  allow users to submit feedback
 
 users
 
@@ -207,3 +123,30 @@ closing tags are important on directives
 http://codereview.stackexchange.com/
 http://jsfiddle.net/IgorMinar/ADukg/
 http://jsfiddle.net/pkozlowski_opensource/hzxNa/1/
+
+
+
+--------------
+thoughts
+
+chet is really just a UX upgrade from gbrowse.  i'm not inventing new features, or a new way to browse a genome, i'm really just making the UX nice and smooth.
+
+some new features may come in the far future, such as easily walking through a list of locations, but for now i'm spending a lot of time working towards feature parity with gbrowse.
+
+in most worlds, this wouldn't be a good argument for working on a project.  who care about UX?  at least no one in BPP.  and yet i think people will end up using chet, because the UX will be nice.  it just _looks_ nicer, and for me that's enough.
+
+there are some peripheral benefits, such as reducing load on the server by drawing on the client, and decoupling the UI from the server code.  this is nice, but not the main goal of chet.
+
+so, thought of the morning, chet is really just about upgrading the UX.  it doesn't seem like much when it's said that way.  can i add more value to this mission?
+
+in the end, it's a side project, and it's been a very fun and challenging one, i've learned a ton, and i think people will actually use this, so having a strong sales pitch isn't needed, but it's good exercise to think about:  how would i sell this project?
+
+what kind of value does the future of chet hold?  while it's starting out fulfulling the basic requirement of feature parity, i think there must be plenty of room for innovation in genome browsing.  google maps has a very nice UI for basic maps browsing, but it adds a ton of value in things like directions, search, street view, etc.  what kinds of features will be awesome innovations in genome browsing?
+
+ideas:
+- walking through a list of genes
+- really great search
+- notes at locations
+- bookmarks
+- connect to other analysis tools
+- google maps has overlays like traffic, videos:  what overlays can i come up with?
