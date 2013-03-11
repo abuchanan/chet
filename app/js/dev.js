@@ -1,3 +1,37 @@
+function generate_dummies() {
+    var sizes = {
+        'ref1': 500000,
+        'ref2': 500000,
+    };
+
+    var NUM_GENES = 1000;
+
+    var genes = {
+        'ref1': [],
+        'ref2': [],
+    };
+
+    for (var ref in genes) {
+        for (var i = 0; i < NUM_GENES; i++) {
+            var start = Math.floor(Math.random() * 500000);
+            genes[ref].push({'start': start, 'end': start + 1000});
+        }
+    }
+
+    return {
+        'genes': genes,
+        'sizes': sizes,
+    }
+}
+var dummies = {
+  'A': generate_dummies(),
+  'B': generate_dummies(),
+};
+
+//var dummies = tair10;
+
+
+
 angular.module('chet.dev', ['chet', 'ngMockE2E']).
   run(function($httpBackend) {
 
@@ -17,8 +51,8 @@ angular.module('chet.dev', ['chet', 'ngMockE2E']).
         return [200, angular.toJson(x), {}];
     });
 
-    $httpBackend.whenGET('genes/serverA/sizes').respond(tair10.A.sizes);
-    $httpBackend.whenGET('genes/serverB/sizes').respond(tair10.B.sizes);
+    $httpBackend.whenGET('genes/serverA/sizes').respond(dummies.A.sizes);
+    $httpBackend.whenGET('genes/serverB/sizes').respond(dummies.B.sizes);
 
     $httpBackend.whenGET(/genes\/serverB\/data/).respond(function(method, url, data) {
         var p = parseUri(url).queryKey;
@@ -50,7 +84,6 @@ angular.module('chet.dev', ['chet', 'ngMockE2E']).
     $httpBackend.whenGET('presets').respond(tracks);
 
     $httpBackend.whenGET(/^partials\//).passThrough();
-
   });
 
 
@@ -77,10 +110,9 @@ var DummyGeneServer = function(genes) {
     }
 };
 
+var serverA = new DummyGeneServer(dummies.A.genes);
 
-var serverA = new DummyGeneServer(tair10.A.genes);
-
-var serverB = new DummyGeneServer(tair10.B.genes);
+var serverB = new DummyGeneServer(dummies.B.genes);
 
 function DummyCoverageServer() {
     var max = 100;

@@ -343,14 +343,14 @@ angular.module('chet.directives', []).
                   left: z + '%',
                 }
 
-                /*
-                TODO 
                 var pos = $scope.position;
                 var mid = pos.start + (pos.width / 2);
                 var v = pos.max * (percent / 100) / 2;
+                console.log(pos.max);
+                console.log(pos.start - v);
+                console.log(pos.start + v);
                 pos.start -= v;
                 pos.end += v;
-                */
             }
 
             var handle = $element.find('.chet-zoomer-handle');

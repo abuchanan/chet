@@ -1,33 +1,47 @@
 'use strict';
 
-
 /*
   TODO don't allow the start to be greater than the end
        i.e. the width should have a min. allowed value
 */
-function ChetPosition(ref, start, end) {
+function ChetPosition(ref, start, end, max) {
   this.ref = ref;
-  this.start = start;
-  this.end = end;
-  // TODO this is an arbitrary
-  this.max = 800000;
+  this.start(start);
+  this.end(end);
+  // TODO maybe max doesn't make sense in this class?
+  this.max = max;
 }
 ChetPosition.prototype = {
-    get width() {
-      return this.end - this.start;
+    width: function() {
+      return this.end() - this.start();
     },
-    maxHint: function(max) {
-      this.max = Math.max(max, this.max);
+    start: function(val) {
+      if (val) {
+        if (val >= this.end()) {
+          throw new Exception('Invalid start value');
+        }
+        this._start = val;
+      }
+      return this._start;
+    },
+    end: function(val) {
+      if (val) {
+        if (val <= this.start()) {
+          throw new Exception('Invalid end value');
+        }
+        this._end = val;
+      }
+      return this._end;
     },
     shift: function(amount) {
-      var w = this.width;
-      this.start += amount;
-      this.end = this.start + w;
+      var w = this.width();
+      this.start(this.start() + amount);
+      this.end(this.start() + w);
     },
-    shiftTo: function(start) {
-      var w = this.width;
-      this.start = start;
-      this.end = this.start + w;
+    shiftTo: function(position) {
+      var w = this.width();
+      this.start(position);
+      this.end(this.start() + w);
     }
 };
 
@@ -49,7 +63,7 @@ function InstanceCtrl($routeParams, $scope, $location, Instance, Presets) {
 
   $scope.instanceID = $routeParams.instanceID;
 
-  var pos = new ChetPosition('Chr1', 25000, 50000);
+  var pos = new ChetPosition('ref1', 25000, 50000);
   $scope.pos = pos;
 
   $scope.$watch('pos', function(pos) {
@@ -164,7 +178,7 @@ function GeneTrackCtrl($scope, Genes) {
         var sizes = Genes.sizes({db: $scope.track.server}, function() {
             var ref = $scope.position.ref;
             if (ref in sizes) {
-                $scope.position.maxHint(sizes[ref]);
+                $scope.position.max = sizes[ref];
             }
         });
 
